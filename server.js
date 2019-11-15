@@ -58,13 +58,15 @@ axios.get("https://www.outsideonline.com/").then(function(response) {
     // Save the text of the element in a "title" variable
     // "c-block__title-link" IS the title of articles
     var title = $(element).text();
+    var link = $(element).attr("href");
 
     // Save these results in an object that will be pushed into the results array defined earlier
    db.scrapedData.insert({
-      title: title
+      title: title,
+      link: link
     });
     // Log the results once app has looped through each of the elements found with cheerio
-    console.log(title);
+    console.log("Article Title: " + title + "\nArticle Link: " + link);
   });
 
 });
