@@ -1,7 +1,6 @@
 // Dependencies
 var express = require("express");
 var mongojs = require("mongojs");
-// Require axios and cheerio. This makes the scraping possible
 var axios = require("axios");
 var cheerio = require("cheerio");
 
@@ -20,29 +19,11 @@ db.on("error", function(error) {
 
 // Main route (simple Hello World Message)
 app.get("/", function(req, res) {
-  res.send("Hello world");
+  res.send("Outside Magazine Data Scrape by Michael Cuccia");
 });
 
 
-// This route will retrieve all of the data
-// from the scrapedData collection as a json 
-
-app.get("/all", function(req, res) {
-   db.scrapedData.find({}, function(error, found) {
-    // Log any errors if the server encounters one
-    if (error) {
-      console.log(error);
-    }
-    // Otherwise, send the result of this query to the browser
-    else {
-      res.json(found);
-    }
-  });
-});
-
-// in this route, the server will
-// scrape data from outsideonline.com, and save it to
-// MongoDB.
+// scrape data from outsideonline.com, and save it to MongoDB.
 
 axios.get("https://www.outsideonline.com/").then(function(response) {
 // Load the HTML into cheerio and save it to a variable
@@ -55,11 +36,10 @@ axios.get("https://www.outsideonline.com/").then(function(response) {
   // (i: iterator. element: the current element)
   $(".c-block__title-link").each(function(i, element) {
 
-    // Save the text of the element in a "title" variable
+    // Save the text, url, img of the element in a separate variables
     // "c-block__title-link" IS the title of articles
     var title = $(element).text();
     let articleSummary = $(element).parent().siblings('p').text();
-    //console.log(siblingP);
     let imageSource = $(element).parent().parent().siblings('div').children().children().attr('data-original');
     console.log(imageSource);
     var link = $(element).attr("href");
@@ -75,6 +55,22 @@ axios.get("https://www.outsideonline.com/").then(function(response) {
     console.log("Article Title: " + title + "\nArticle Link: " + link + "\nArticle Summary: " + articleSummary + "\nArticle Image: " + imageSource);
   });
 
+});
+
+// This route will retrieve all of the data
+// from the scrapedData collection as a json 
+
+app.get("/all", function(req, res) {
+  db.scrapedData.find({}, function(error, found) {
+   // Log any errors if the server encounters one
+   if (error) {
+     console.log(error);
+   }
+   // Otherwise, send the result of this query to the browser
+   else {
+     res.json(found);
+   }
+ });
 });
 
 // Listen on port 3000
